@@ -1,17 +1,18 @@
-package com.hh.tankgame02;
+package com.hh.tankgame03;
 
 import javax.swing.*;
 
-public class HHTankGame02 extends JFrame {
+public class HHTankGame03 extends JFrame {
     //定义一个Mypanel
     MyPanel mp  = null;
     public static void main(String[] args) {
-        HHTankGame02 hhTankGame02 = new HHTankGame02();
+        HHTankGame03 hhTankGame03 = new HHTankGame03();
 
 
     }
-    public HHTankGame02() {
+    public HHTankGame03() {
         mp = new MyPanel();//初始化
+        new Thread(mp).start();
         this.add(mp);//把面板添加进去
         this.setSize(1000,750);
         this.addKeyListener(mp);//监听事件
