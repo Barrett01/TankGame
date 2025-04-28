@@ -48,22 +48,25 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
 
         //画出坦克-方法
         drawTank(hero.getX(), hero.getY(), g, hero.getDirect(), 0);
-        
+
         //画出敌军坦克-方法
         for (int i = 0; i < enemyTanks.size(); i++) {
             //取出敌军坦克
             EnemyTank enemyTank = enemyTanks.get(i);
-            drawTank(enemyTank.getX(), enemyTank.getY(), g, enemyTank.getDirect(), 1);
-            //画出所有的子弹
-            for (int j = 0; j < enemyTank.shots.size(); j++) {
-                //取出子弹
-                Shot shot = enemyTank.shots.get(j);
-                if (shot.isLive) {//存活就绘画
-                    g.draw3DRect(shot.x, shot.y, 2, 2, false);
-                } else {//否者移除shots集合
-                    enemyTank.shots.remove(j);
+            if (enemyTank.isLive){//判断坦克是否存活
+                drawTank(enemyTank.getX(), enemyTank.getY(), g, enemyTank.getDirect(), 1);
+                //画出所有的子弹
+                for (int j = 0; j < enemyTank.shots.size(); j++) {
+                    //取出子弹
+                    Shot shot = enemyTank.shots.get(j);
+                    if (shot.isLive) {//存活就绘画
+                        g.draw3DRect(shot.x, shot.y, 2, 2, false);
+                    } else {//否者移除shots集合
+                        enemyTank.shots.remove(j);
+                    }
                 }
             }
+
         }
 
         //画我方坦克的子弹
@@ -127,6 +130,30 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         }
     }
 
+    //编写方法：判断我方坦克是否击中 敌人坦克
+    //什么地方判断是否击中：循环判断
+    public static void hitTank(Shot s, EnemyTank enemyTank) {
+        switch (enemyTank.getDirect()) {
+            case 0://坦克向上
+            case 2://坦克向下
+                if (s.x > enemyTank.getX() && s.x < enemyTank.getX() + 40
+                        && s.y > enemyTank.getY() && s.y < enemyTank.getY() + 60) {
+                    s.isLive = false;
+                    enemyTank.isLive = false;
+                }
+                break;
+            case 1://坦克向右
+
+            case 3://坦克向左
+                if (s.x > enemyTank.getX() && s.x < enemyTank.getX() + 60
+                        && s.y > enemyTank.getY() && s.y < enemyTank.getY() + 40) {
+                    s.isLive = false;
+                    enemyTank.isLive = false;
+                }
+                break;
+        }
+    }
+
     //监听事件1
     @Override
     public void keyTyped(KeyEvent e) {
@@ -177,6 +204,16 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            //判断是否击中坦克
+            if (hero.shot!= null && hero.shot.isLive){//如果我的坦克子弹还存活
+                //遍历敌人所有坦克
+                for (int i = 0; i < enemyTanks.size(); i++) {
+                    EnemyTank enemyTank = enemyTanks.get(i);
+                    hitTank(hero.shot,enemyTank);
+                }
+
+            }
+            //绘画
             this.repaint();
         }
     }
