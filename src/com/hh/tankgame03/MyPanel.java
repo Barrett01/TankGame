@@ -17,6 +17,13 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
     Vector<EnemyTank> enemyTanks = new Vector();
     int enemyTanksSize = 3;
 
+    //定义一个Vector，用于存放炸弹
+    Vector<Bomb> bombs = new Vector<>();
+    //定义三张照片,用于现实爆炸效果
+    Image image1 = null;
+    Image image2 = null;
+    Image image3 = null;
+
     //初始化自己的坦克
     public MyPanel() {
         hero = new Hero(100, 100);
@@ -27,7 +34,7 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
             EnemyTank enemyTank = new EnemyTank(100 * (i + 1), 0);
             enemyTank.setDirect(2);
             //加入子弹
-//  放入集合中  ：   enemyTank.shots.add(new Shot(enemyTank.getX()+20, enemyTank.getY()+60, enemyTank.getDirect()));
+            //  放入集合中  ：   enemyTank.shots.add(new Shot(enemyTank.getX()+20, enemyTank.getY()+60, enemyTank.getDirect()));
             Shot shot = new Shot(enemyTank.getX() + 20, enemyTank.getY() + 60, enemyTank.getDirect());
             //加入到enemyTank的Vector成员
             enemyTank.shots.add(shot);
@@ -38,6 +45,11 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
 
 
         }
+
+        //初始化图片对象
+        image1 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_1.jpg"));
+        image2 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_2.jpg"));
+        image3 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_3.jpg"));
     }
 
     //绘图
@@ -48,6 +60,30 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
 
         //画出坦克-方法
         drawTank(hero.getX(), hero.getY(), g, hero.getDirect(), 0);
+        //画我方坦克的子弹
+        if (hero.shot != null && hero.shot.isLive == true) {
+            g.draw3DRect(hero.shot.x, hero.shot.y, 2, 2, false);
+        }
+
+        //如果bombs 集合中有对象，就画出
+        for (int i = 0; i < bombs.size(); i++) {
+            //取出炸弹
+            Bomb bomb = bombs.get(i);
+            //根据当前这个bomb对象的life值去画出对应的图片
+            if (bomb.life > 6) {
+                g.drawImage(image1, bomb.x, bomb.y, 60, 60, this);
+            } else if (bomb.life > 3) {
+                g.drawImage(image2, bomb.x, bomb.y, 60, 60, this);
+            } else {
+                g.drawImage(image3, bomb.x, bomb.y, 60, 60, this);
+            }
+            //让这个炸弹的生命值减少
+            bomb.lifeDown();
+            //如果bomb life 为0, 就从bombs 的集合中删除
+            if (bomb.life == 0) {
+                bombs.remove(bomb);
+            }
+        }
 
         //画出敌军坦克-方法
         for (int i = 0; i < enemyTanks.size(); i++) {
@@ -62,17 +98,14 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                     if (shot.isLive) {//存活就绘画
                         g.draw3DRect(shot.x, shot.y, 2, 2, false);
                     } else {//否者移除shots集合
-                        enemyTank.shots.remove(j);
+                        enemyTank.shots.remove(shot);
                     }
                 }
             }
 
         }
 
-        //画我方坦克的子弹
-        if (hero.shot != null && hero.shot.isLive == true) {
-            g.draw3DRect(hero.shot.x, hero.shot.y, 2, 2, false);
-        }
+
 
 
     }
@@ -132,7 +165,7 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
 
     //编写方法：判断我方坦克是否击中 敌人坦克
     //什么地方判断是否击中：循环判断
-    public static void hitTank(Shot s, EnemyTank enemyTank) {
+    public  void hitTank(Shot s, EnemyTank enemyTank) {
         switch (enemyTank.getDirect()) {
             case 0://坦克向上
             case 2://坦克向下
@@ -140,6 +173,9 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                         && s.y > enemyTank.getY() && s.y < enemyTank.getY() + 60) {
                     s.isLive = false;
                     enemyTank.isLive = false;
+                    //创建bomb对象，加入到bombs集合
+                    Bomb bomb = new Bomb(enemyTank.getX(), enemyTank.getY());
+                    bombs.add(bomb);
                 }
                 break;
             case 1://坦克向右
@@ -149,6 +185,9 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                         && s.y > enemyTank.getY() && s.y < enemyTank.getY() + 40) {
                     s.isLive = false;
                     enemyTank.isLive = false;
+                    //创建bomb对象，加入到bombs集合
+                    Bomb bomb = new Bomb(enemyTank.getX(), enemyTank.getY());
+                    bombs.add(bomb);
                 }
                 break;
         }
