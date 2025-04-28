@@ -41,6 +41,7 @@ public class Shot implements Runnable {
             //超过边界就销毁
             if (!(x>=0 && x <= 1000 && y>=0 && y <= 750)) {
                 isLive = false;
+                System.out.println("子弹线程结束~");
                 break;
             }
         }

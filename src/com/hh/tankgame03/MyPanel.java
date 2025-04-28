@@ -10,7 +10,7 @@ import java.util.Vector;
 /*
 为了监听键盘事件 实现KeyLister
  */
-public class MyPanel extends JPanel implements KeyListener ,Runnable {
+public class MyPanel extends JPanel implements KeyListener, Runnable {
     //定义自己的坦克
     Hero hero = null;
     //定义敌军的坦克 由于比较多,所以要用数组{介于要使用线程这里使用Vector}
@@ -26,8 +26,16 @@ public class MyPanel extends JPanel implements KeyListener ,Runnable {
         for (int i = 0; i < enemyTanksSize; i++) {
             EnemyTank enemyTank = new EnemyTank(100 * (i + 1), 0);
             enemyTank.setDirect(2);
+            //加入子弹
+//  放入集合中  ：   enemyTank.shots.add(new Shot(enemyTank.getX()+20, enemyTank.getY()+60, enemyTank.getDirect()));
+            Shot shot = new Shot(enemyTank.getX() + 20, enemyTank.getY() + 60, enemyTank.getDirect());
+            //加入到enemyTank的Vector成员
+            enemyTank.shots.add(shot);
+            //启动 shot对象
+            new Thread(shot).start();
+            //加入
             enemyTanks.add(enemyTank);
-//            enemyTank.s
+
 
         }
     }
@@ -40,18 +48,32 @@ public class MyPanel extends JPanel implements KeyListener ,Runnable {
 
         //画出坦克-方法
         drawTank(hero.getX(), hero.getY(), g, hero.getDirect(), 0);
+        
         //画出敌军坦克-方法
         for (int i = 0; i < enemyTanks.size(); i++) {
             //取出敌军坦克
             EnemyTank enemyTank = enemyTanks.get(i);
-            drawTank(enemyTank.getX(),enemyTank.getY(),g,enemyTank.getDirect(),1);
+            drawTank(enemyTank.getX(), enemyTank.getY(), g, enemyTank.getDirect(), 1);
+            //画出所有的子弹
+            for (int j = 0; j < enemyTank.shots.size(); j++) {
+                //取出子弹
+                Shot shot = enemyTank.shots.get(j);
+                if (shot.isLive) {//存活就绘画
+                    g.draw3DRect(shot.x, shot.y, 2, 2, false);
+                } else {//否者移除shots集合
+                    enemyTank.shots.remove(j);
+                }
+            }
         }
 
-        //画出子弹
-        if (hero.shot != null && hero.shot.isLive == true){
-            g.draw3DRect(hero.shot.x,hero.shot.y,2,2,false);
+        //画我方坦克的子弹
+        if (hero.shot != null && hero.shot.isLive == true) {
+            g.draw3DRect(hero.shot.x, hero.shot.y, 2, 2, false);
         }
+
+
     }
+
 
     //编写方法，画出坦克
     /*
@@ -130,7 +152,7 @@ public class MyPanel extends JPanel implements KeyListener ,Runnable {
         }
 
         //按下j 发射子弹
-        if (e.getKeyCode() == KeyEvent.VK_J){
+        if (e.getKeyCode() == KeyEvent.VK_J) {
 //            if (hero.shot = null && !hero.shot.isLive){
 //                hero.shot.isLive = false;
 //            }
