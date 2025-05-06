@@ -178,6 +178,8 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                         && s.y > enemyTank.getY() && s.y < enemyTank.getY() + 60) {
                     s.isLive = false;
                     enemyTank.isLive = false;
+                    //当我们的子弹击中敌方坦克，让它从集合中消失
+                    enemyTanks.remove(enemyTank);
                     //创建bomb对象，加入到bombs集合
                     Bomb bomb = new Bomb(enemyTank.getX(), enemyTank.getY());
                     bombs.add(bomb);
@@ -190,6 +192,9 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                         && s.y > enemyTank.getY() && s.y < enemyTank.getY() + 40) {
                     s.isLive = false;
                     enemyTank.isLive = false;
+                    //当我们的子弹击中敌方坦克，让它从集合中消失
+                    enemyTanks.remove(enemyTank);
+                    
                     //创建bomb对象，加入到bombs集合
                     Bomb bomb = new Bomb(enemyTank.getX(), enemyTank.getY());
                     bombs.add(bomb);
