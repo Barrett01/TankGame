@@ -70,6 +70,11 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
             //取出炸弹
             Bomb bomb = bombs.get(i);
             //根据当前这个bomb对象的life值去画出对应的图片
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             if (bomb.life > 6) {
                 g.drawImage(image1, bomb.x, bomb.y, 60, 60, this);
             } else if (bomb.life > 3) {
