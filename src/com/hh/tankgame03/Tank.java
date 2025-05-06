@@ -10,19 +10,30 @@ public class Tank {
 
     //上下左右的移动
     public void moveUp() {
-        y -= speed;
+        if (getY() > 0){
+            y -= speed;
+        }
     }
 
     public void moveDown() {
-        y += speed;
+        if (getY() +60< 750){
+            y += speed;
+        }
+
     }
 
     public void moveLeft() {
-        x -= speed;
+        if (getX() > 0){
+            x -= speed;
+        }
+
     }
 
     public void moveRight() {
-        x += speed;
+        if (getX() +60 < 1000){
+            x += speed;
+        }
+
     }
 
     public Tank(int x, int y) {
