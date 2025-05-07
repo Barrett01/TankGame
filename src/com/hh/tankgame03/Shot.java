@@ -42,6 +42,7 @@ public class Shot implements Runnable {
             //当子弹碰到地方坦克的时候 也该终止线程
             if (!(x>=0 && x <= 1000 && y>=0 && y <= 750 && isLive)) {
                 isLive = false;
+
                 System.out.println("子弹线程结束~");
                 break;
             }

@@ -62,8 +62,16 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         //画出坦克-方法
         drawTank(hero.getX(), hero.getY(), g, hero.getDirect(), 0);
         //画我方坦克的子弹
-        if (hero.shot != null && hero.shot.isLive == true) {
-            g.draw3DRect(hero.shot.x, hero.shot.y, 2, 2, false);
+//        if (hero.shot != null && hero.shot.isLive == true) {
+//            g.draw3DRect(hero.shot.x, hero.shot.y, 2, 2, false);
+//        }
+        for (int j = 0; j < hero.shots.size(); j++) {
+            Shot shot = hero.shots.get(j);
+            if (shot != null && shot.isLive == true) {
+                g.draw3DRect(shot.x, shot.y, 2, 2, false);
+            }else {
+                hero.shots.remove(shot);
+            }
         }
 
         //如果bombs 集合中有对象，就画出
@@ -95,7 +103,7 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         for (int i = 0; i < enemyTanks.size(); i++) {
             //取出敌军坦克
             EnemyTank enemyTank = enemyTanks.get(i);
-            if (enemyTank.isLive){//判断坦克是否存活
+            if (enemyTank.isLive) {//判断坦克是否存活
                 drawTank(enemyTank.getX(), enemyTank.getY(), g, enemyTank.getDirect(), 1);
                 //画出所有的子弹
                 for (int j = 0; j < enemyTank.shots.size(); j++) {
@@ -110,8 +118,6 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
             }
 
         }
-
-
 
 
     }
@@ -168,10 +174,15 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                 System.out.println("暂时没有处理");
         }
     }
+/*
+如果我们的坦克可以发射多个子弹，在判断我方子弹是否击中敌人坦克时，
+就需要把我们的子弹集合中所有的子弹都取出来和敌人坦克比较
+ */
+
 
     //编写方法：判断我方坦克是否击中 敌人坦克
     //什么地方判断是否击中：循环判断
-    public  void hitTank(Shot s, EnemyTank enemyTank) {
+    public void hitTank(Shot s, EnemyTank enemyTank) {
         switch (enemyTank.getDirect()) {
             case 0://坦克向上
             case 2://坦克向下
@@ -233,7 +244,12 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
 //            if (hero.shot = null && !hero.shot.isLive){
 //                hero.shot.isLive = false;
 //            }
+//            if(hero.shot== null || !hero.shot.isLive){//当子弹为空或者子弹生命周期结束，才能绘制下一颗子弹
+//                hero.shotEnemyTank();
+//            }
             hero.shotEnemyTank();
+
+
         }
 
         //重绘
@@ -255,14 +271,17 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                 e.printStackTrace();
             }
             //判断是否击中坦克
-            if (hero.shot!= null && hero.shot.isLive){//如果我的坦克子弹还存活
-                //遍历敌人所有坦克
-                for (int i = 0; i < enemyTanks.size(); i++) {
-                    EnemyTank enemyTank = enemyTanks.get(i);
-                    hitTank(hero.shot,enemyTank);
+            for (int j = 0; j < hero.shots.size(); j++) {
+                Shot shot = hero.shots.get(j);
+                if (shot != null && shot.isLive) {//如果我的坦克子弹还存活
+                    //遍历敌人所有坦克
+                    for (int i = 0; i < enemyTanks.size(); i++) {
+                        EnemyTank enemyTank = enemyTanks.get(i);
+                        hitTank(shot, enemyTank);
+                    }
                 }
-
             }
+
             //绘画
             this.repaint();
         }
