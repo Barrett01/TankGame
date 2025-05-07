@@ -4,7 +4,7 @@ public class Shot implements Runnable {
     int x;
     int y;
     int direction; //子弹的方向
-    int speed = 5;//子弹的速度
+    int speed = 8;//子弹的速度
     boolean isLive = true;//子弹是否还存活
 
     public Shot(int x, int y, int direction) {

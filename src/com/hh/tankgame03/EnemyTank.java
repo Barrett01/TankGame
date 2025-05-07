@@ -14,6 +14,27 @@ public class EnemyTank extends Tank implements Runnable {
     @Override
     public void run() {
         while (true) {
+            //限制敌方坦克至少发射一颗子弹
+            if (isLive && shots.size() == 0) {
+                Shot s = null;
+                //根据不同的方向，创建对应的子弹
+                switch (getDirect()) {
+                    case 0:
+                        s = new Shot(getX()+20,getY(),0);
+                        break;
+                    case 1:
+                        s = new Shot(getX()+60,getY()+20,1);
+                        break;
+                    case 2:
+                        s = new Shot(getX()+20,getY()+60,2);
+                        break;
+                    case 3:
+                        s = new Shot(getX(),getY()+20,3);
+                        break;
+                }
+                shots.add(s);
+                new Thread(s).start();
+            }
             //根据坦克方向来继续移动
             switch (getDirect()) {
                 case 0:
