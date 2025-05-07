@@ -6,6 +6,7 @@ import java.util.Vector;
 public class Hero extends Tank {
     Shot shot = null;//定义一个Shot对象，表示一个射程（线程）
 
+
     //可以发射多个子弹,创建的数组
    Vector<Shot> shots = new  Vector<>();
     public Hero(int x, int y) {

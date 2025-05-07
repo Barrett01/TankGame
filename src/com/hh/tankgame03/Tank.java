@@ -5,6 +5,7 @@ public class Tank {
     private int y;
     private int direct; //坦克方向 0 上 ;1 右; 2 下; 3 左
     private int speed = 5;//速度
+    Boolean isLive = true;
 
 
 
