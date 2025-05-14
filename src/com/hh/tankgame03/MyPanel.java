@@ -15,7 +15,7 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
     Hero hero = null;
     //定义敌军的坦克 由于比较多,所以要用数组{介于要使用线程这里使用Vector}
     Vector<EnemyTank> enemyTanks = new Vector();
-    int enemyTanksSize = 6;
+    int enemyTanksSize = 12;
 
     //定义一个Vector，用于存放炸弹
     Vector<Bomb> bombs = new Vector<>();
@@ -224,7 +224,7 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
             EnemyTank enemyTank = enemyTanks.get(i);
             for (int j = 0; j < enemyTank.shots.size(); j++) {
                 Shot shot = enemyTank.shots.get(j);
-                if (shot != null && shot.isLive) {
+                if (hero.isLive  && shot.isLive) {
                     hitTank(shot,hero);
                 }
             }
@@ -232,33 +232,33 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
     }
 
     //编写方法：判断我方坦克是否击中 敌人坦克
-    public void hitTank(Shot s, Tank enemyTank) {//这里为了方便可以判断敌军坦克击败我军坦克 所以使用Tank
-        switch (enemyTank.getDirect()) {
+    public void hitTank(Shot s, Tank tank) {//这里为了方便可以判断敌军坦克击败我军坦克 所以使用Tank
+        switch (tank.getDirect()) {
             case 0://坦克向上
             case 2://坦克向下
-                if (s.x > enemyTank.getX() && s.x < enemyTank.getX() + 40
-                        && s.y > enemyTank.getY() && s.y < enemyTank.getY() + 60) {
+                if (s.x > tank.getX() && s.x < tank.getX() + 40
+                        && s.y > tank.getY() && s.y < tank.getY() + 60) {
                     s.isLive = false;
-                    enemyTank.isLive = false;
+                    tank.isLive = false;
                     //当我们的子弹击中敌方坦克，让它从集合中消失
-                    enemyTanks.remove(enemyTank);
+                    enemyTanks.remove(tank);
                     //创建bomb对象，加入到bombs集合
-                    Bomb bomb = new Bomb(enemyTank.getX(), enemyTank.getY());
+                    Bomb bomb = new Bomb(tank.getX(), tank.getY());
                     bombs.add(bomb);
                 }
                 break;
             case 1://坦克向右
 
             case 3://坦克向左
-                if (s.x > enemyTank.getX() && s.x < enemyTank.getX() + 60
-                        && s.y > enemyTank.getY() && s.y < enemyTank.getY() + 40) {
+                if (s.x > tank.getX() && s.x < tank.getX() + 60
+                        && s.y > tank.getY() && s.y < tank.getY() + 40) {
                     s.isLive = false;
-                    enemyTank.isLive = false;
+                    tank.isLive = false;
                     //当我们的子弹击中敌方坦克，让它从集合中消失
-                    enemyTanks.remove(enemyTank);
+                    enemyTanks.remove(tank);
 
                     //创建bomb对象，加入到bombs集合
-                    Bomb bomb = new Bomb(enemyTank.getX(), enemyTank.getY());
+                    Bomb bomb = new Bomb(tank.getX(), tank.getY());
                     bombs.add(bomb);
                 }
                 break;
@@ -331,10 +331,8 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                     }
                 }
             }
-
             //判断是否击中我方坦克{这里跟上面做个区别 用这种更简洁}
             hitHero();
-
             //绘画
             this.repaint();
         }
