@@ -10,7 +10,7 @@ public class Recorder {
     //定义IO对象，准备写数据到文件中
     private static BufferedReader bur =null;
     private static BufferedWriter bw = null;
-    private static String recordFile = "D:\\text\\myRecord.txt";
+    private static String recordFile = "src\\myRecord.txt";
     //定义一个Node的Vector 用于保存敌人的信息node
     private static Vector<Node> nodes = new Vector<>();
     //定义一个Vector，指向MyPanel对象的 敌人坦克 Vector
@@ -19,6 +19,11 @@ public class Recorder {
     public static void setEnemyTanks(Vector<EnemyTank> enemyTanks){
         Recorder.enemyTanks = enemyTanks;
     }
+
+    public static String getRecordFile() {
+        return recordFile;
+    }
+
     //增加一个方法 用于读取recordFile 恢复相关信息
     public static Vector<Node> getNodesAndEnemyTankRec() {
         try {
