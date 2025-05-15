@@ -13,6 +13,8 @@ import java.util.Vector;
 public class MyPanel extends JPanel implements KeyListener, Runnable {
     //定义自己的坦克
     Hero hero = null;
+    //定义一个Node的对象Vector 用于恢复敌人坦克的坐标和方向
+    Vector<Node> nodes = new Vector<>();
     //定义敌军的坦克 由于比较多,所以要用数组{介于要使用线程这里使用Vector}
     Vector<EnemyTank> enemyTanks = new Vector();
     int enemyTanksSize = 3;
@@ -24,48 +26,79 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
     Image image2 = null;
     Image image3 = null;
 
-    //初始化自己的坦克
-    public MyPanel() {
+
+    public MyPanel(String key) {
+        nodes = Recorder.getNodesAndEnemyTankRec();
+        //将MyPanel对象的enemyTanks设置给Recorder的enemyTanks
+        Recorder.setEnemyTanks(enemyTanks);
+
+        //初始化自己的坦克
         hero = new Hero(100, 100);
         hero.setSpeed(8);
 
         //初始化敌人的坦克
-        for (int i = 0; i < enemyTanksSize; i++) {
-            EnemyTank enemyTank = new EnemyTank(100 * (i + 1), 0);
-            //将enemyTanks设置给enemyTank
-            enemyTank.setEnemyTanks(enemyTanks);
-            enemyTank.setDirect(0);//设置方向
-            new Thread(enemyTank).start();//启动敌军坦克线程
-            //加入子弹
-            //  放入集合中  ：   enemyTank.shots.add(new Shot(enemyTank.getX()+20, enemyTank.getY()+60, enemyTank.getDirect()));
-            Shot shot = new Shot(enemyTank.getX() + 20, enemyTank.getY() + 60, enemyTank.getDirect());
-            //加入到enemyTank的Vector成员
-            enemyTank.shots.add(shot);
-            //启动 shot对象
-            new Thread(shot).start();
-            //加入
-            enemyTanks.add(enemyTank);
-
-
+        switch (key) {
+            case "1":
+                for (int i = 0; i < enemyTanksSize; i++) {
+                    EnemyTank enemyTank = new EnemyTank(100 * (i + 1), 0);
+                    //将enemyTanks设置给enemyTank
+                    enemyTank.setEnemyTanks(enemyTanks);
+                    enemyTank.setDirect(0);//设置方向
+                    new Thread(enemyTank).start();//启动敌军坦克线程
+                    //加入子弹
+                    //  放入集合中  ：   enemyTank.shots.add(new Shot(enemyTank.getX()+20, enemyTank.getY()+60, enemyTank.getDirect()));
+                    Shot shot = new Shot(enemyTank.getX() + 20, enemyTank.getY() + 60, enemyTank.getDirect());
+                    //加入到enemyTank的Vector成员
+                    enemyTank.shots.add(shot);
+                    //启动 shot对象
+                    new Thread(shot).start();
+                    //加入
+                    enemyTanks.add(enemyTank);
+                }
+                break;
+            case "2":
+                for (int i = 0; i < nodes.size(); i++) {
+                    Node node = nodes.get(i);
+                    EnemyTank enemyTank = new EnemyTank(node.getX(), node.getY());
+                    //将enemyTanks设置给enemyTank
+                    enemyTank.setEnemyTanks(enemyTanks);
+                    enemyTank.setDirect(node.getDirect());//设置方向
+                    new Thread(enemyTank).start();//启动敌军坦克线程
+                    //加入子弹
+                    //  放入集合中  ：   enemyTank.shots.add(new Shot(enemyTank.getX()+20, enemyTank.getY()+60, enemyTank.getDirect()));
+                    Shot shot = new Shot(enemyTank.getX() + 20, enemyTank.getY() + 60, enemyTank.getDirect());
+                    //加入到enemyTank的Vector成员
+                    enemyTank.shots.add(shot);
+                    //启动 shot对象
+                    new Thread(shot).start();
+                    //加入
+                    enemyTanks.add(enemyTank);
+                }
+                break;
+            default:
+                System.out.println("输入有误");
         }
+
 
         //初始化图片对象
         image1 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_1.jpg"));
         image2 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_2.jpg"));
         image3 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_3.jpg"));
     }
-//编写方法，现实我方坦克摧毁地方坦克的信息
+
+    //编写方法，现实我方坦克摧毁地方坦克的信息
     public void showInfo(Graphics g) {
         //画出玩家成家
         g.setColor(Color.black);
         Font font = new Font("宋体", Font.BOLD, 25);
         g.setFont(font);
-        g.drawString("您累积击毁敌方坦克：",1020,30);
+        g.drawString("您累积击毁敌方坦克：", 1020, 30);
 
-        drawTank(1020,60,g,0,0);
+        drawTank(1020, 60, g, 0, 0);
         g.setColor(Color.black);
-        g.drawString(Recorder.getAllEnemyTankNum()+" ",1080,100);
+        g.drawString(Recorder.getAllEnemyTankNum() + " ", 1080, 100);
     }
+
     //绘图
     @Override
     public void paint(Graphics g) {//绘图方法
@@ -85,7 +118,7 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
             Shot shot = hero.shots.get(j);
             if (shot != null && shot.isLive == true) {
                 g.draw3DRect(shot.x, shot.y, 2, 2, false);
-            }else {
+            } else {
                 hero.shots.remove(shot);
             }
         }
@@ -195,7 +228,7 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
 就需要把我们的子弹集合中所有的子弹都取出来和敌人坦克比较
  */
 
-//编写敌军坦克击败我军坦克
+    //编写敌军坦克击败我军坦克
 //    //要点：与下面的代码是不是极其重复 因此我们可以直接使用而不是再写一次
 //    public void enemhitTank(Shot s ,Hero hero) {
 //        switch (hero.getDirect()){
@@ -230,13 +263,13 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
 //        }
 //    }
 //编写敌军坦克击败我军坦克的方法
-    public void hitHero(){
+    public void hitHero() {
         for (int i = 0; i < enemyTanks.size(); i++) {
             EnemyTank enemyTank = enemyTanks.get(i);
             for (int j = 0; j < enemyTank.shots.size(); j++) {
                 Shot shot = enemyTank.shots.get(j);
-                if (hero.isLive  && shot.isLive) {
-                    hitTank(shot,hero);
+                if (hero.isLive && shot.isLive) {
+                    hitTank(shot, hero);
                 }
             }
         }
