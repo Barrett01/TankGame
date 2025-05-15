@@ -15,7 +15,7 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
     Hero hero = null;
     //定义敌军的坦克 由于比较多,所以要用数组{介于要使用线程这里使用Vector}
     Vector<EnemyTank> enemyTanks = new Vector();
-    int enemyTanksSize = 12;
+    int enemyTanksSize = 3;
 
     //定义一个Vector，用于存放炸弹
     Vector<Bomb> bombs = new Vector<>();
@@ -54,13 +54,24 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
         image2 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_2.jpg"));
         image3 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_3.jpg"));
     }
+//编写方法，现实我方坦克摧毁地方坦克的信息
+    public void showInfo(Graphics g) {
+        //画出玩家成家
+        g.setColor(Color.black);
+        Font font = new Font("宋体", Font.BOLD, 25);
+        g.setFont(font);
+        g.drawString("您累积击毁敌方坦克：",1020,30);
 
+        drawTank(1020,60,g,0,0);
+        g.setColor(Color.black);
+        g.drawString(Recorder.getAllEnemyTankNum()+" ",1080,100);
+    }
     //绘图
     @Override
     public void paint(Graphics g) {//绘图方法
         super.paint(g);
         g.fillRect(0, 0, 1000, 750);//填充矩形 默认黑色
-
+        showInfo(g);
         //画出我方坦克-方法
         if (hero != null && hero.isLive) {
             drawTank(hero.getX(), hero.getY(), g, hero.getDirect(), 0);
@@ -241,7 +252,11 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                     s.isLive = false;
                     tank.isLive = false;
                     //当我们的子弹击中敌方坦克，让它从集合中消失
-                    enemyTanks.remove(tank);
+                    if (tank instanceof EnemyTank) {
+                        enemyTanks.remove(tank);
+                        Recorder.addAllEnemyTankNum();
+                    }
+
                     //创建bomb对象，加入到bombs集合
                     Bomb bomb = new Bomb(tank.getX(), tank.getY());
                     bombs.add(bomb);
@@ -255,8 +270,11 @@ public class MyPanel extends JPanel implements KeyListener, Runnable {
                     s.isLive = false;
                     tank.isLive = false;
                     //当我们的子弹击中敌方坦克，让它从集合中消失
-                    enemyTanks.remove(tank);
 
+                    if (tank instanceof EnemyTank) {
+                        enemyTanks.remove(tank);
+                        Recorder.addAllEnemyTankNum();
+                    }
                     //创建bomb对象，加入到bombs集合
                     Bomb bomb = new Bomb(tank.getX(), tank.getY());
                     bombs.add(bomb);
